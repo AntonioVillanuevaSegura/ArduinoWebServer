@@ -3,11 +3,11 @@
 
 
 //Set Up ethernet ARCELI W5500 SPI 
-void ethernetSetup(byte mac,IPAddress ip,EthernetServer server){
+void ethernetSetup(byte mac,IPAddress *ip,EthernetServer *server){
   Ethernet.init(10);  // CS D10(Arduino Nano) -->CS W5500
   
   
-  Ethernet.begin(mac, ip); //Start Server web
+  Ethernet.begin(mac, *ip); //Start Server web
   
   // Check for Ethernet hardware present
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
@@ -22,7 +22,7 @@ void ethernetSetup(byte mac,IPAddress ip,EthernetServer server){
   }
   
   // start the server
-  server.begin();
+  (*server).begin();
   
   Serial.print("server IP ");
   Serial.println(Ethernet.localIP());
@@ -109,7 +109,8 @@ void creaBotones (EthernetClient client,byte value,String type="_PIN"){
       client.println("</font>");    
       client.println("</button>");
 
-    if ( ((pin+1)%4)==0){//Agrupa botones por grupo de 4 luego salta la linea detecta 4 8 12 
+    //if ( ((pin+1)%4)==0){//Agrupa botones por grupo de 4 luego salta la linea detecta 4 8 12 
+    if ( ((pin+1)& 0x03)==0){//Agrupa botones por grupo de 4 luego salta la linea detecta 4 8 12       
       client.println("<br /><br />");//Salto de linea
     }
 

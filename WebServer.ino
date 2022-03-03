@@ -44,7 +44,7 @@ void setup() {
   Serial.println("Ethernet WebServer");
   
   expanderSetup ( &mcp );//mcp23017 set Up
-  ethernetSetup(mac,ip,server);//Ethernet Set Up
+  ethernetSetup (mac,&ip,&server);//Ethernet Set Up
 }
  
  
@@ -55,7 +55,6 @@ void loop() {
   
   if (client) {
     clientServer(client,readPort(&mcp,'A') , readPort(&mcp,'B') ); //Lecture PORTA IN
-
   }
   
 }
