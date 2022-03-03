@@ -3,7 +3,7 @@
 byte valeur=0;
 void expanderSetup (DFRobot_MCP23017 *mcp){
     while((*mcp).begin() != 0){//Espera inicializar el mcp23017
-    Serial.println("i2c error !");
+    Serial.println(F("i2c error !"));
     delay(1000);
   }
   /*pinMode function is used to set the pin mode of the module
@@ -33,7 +33,7 @@ void test(DFRobot_MCP23017 *mcp){
   
   //mcp.digitalWrite(/*pin = */mcp.eGPA0, /*level = */HIGH);
   
-  Serial.print("STRAC OUT=");
+  Serial.print(F("STRAC OUT="));
   Serial.println((int)valeur);
   (*mcp).digitalWrite(/*pin = */(*mcp).eGPB, /*Port Value = */valeur);
   valeur ++;

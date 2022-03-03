@@ -41,7 +41,7 @@ void setup() {
   Serial.begin(9600); //Serial Debug
   
   while (!Serial) { } //Wait USB Serial ttyUSB
-  Serial.println("Ethernet WebServer");
+  Serial.println(F("Ethernet WebServer"));
   
   expanderSetup ( &mcp );//mcp23017 set Up
   ethernetSetup (mac,&ip,&server);//Ethernet Set Up
