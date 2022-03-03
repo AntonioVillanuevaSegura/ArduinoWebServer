@@ -1,6 +1,7 @@
 /*
+ * Antonio Villanueva Segura WebServer con spi ethernet W5500 y bus expander mcp23017
  https://docs.arduino.cc/tutorials/ethernet-shield-rev2/WebServer
-  Web Server
+
 ARDUINO NANO 
 A5 SCL Yellow
 A4 SDA Green
@@ -25,10 +26,12 @@ INT                           MISO --> D12 arduino nano
 
 
 #define I2C_ADDRESS 0x20 //mcp23017 expander
+
 //W5500 ETHERNET
 #define MAC 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE
 #define IP 192, 168, 6,69
 #define PORT 80
+
 
 DFRobot_MCP23017 mcp(Wire, /*addr =*/I2C_ADDRESS);
 
@@ -47,8 +50,6 @@ void setup() {
   ethernetSetup (mac,&ip,&server);//Ethernet Set Up
 }
  
- 
-
 void loop() {
   // listen for incoming clients
   EthernetClient client = server.available(); 

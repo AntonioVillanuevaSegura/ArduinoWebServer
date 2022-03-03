@@ -29,74 +29,75 @@ void ethernetSetup(byte mac,IPAddress *ip,EthernetServer *server){
 
 }
 
-//print the answer page 
-void webPage(EthernetClient client,byte value){
-    // send a standard http response header
-  
-  client.println(F("HTTP/1.1 200 OK"));
-  client.println(F("Content-Type: text/html"));
-  client.println(F("Connection: close"));  // the connection will be closed after completion of the response
-  client.println(F("Refresh: 5"));  // refresh the page  every 5 sec
-  client.println();
-  client.println(F("<!DOCTYPE HTML>"));
-  client.println(F("<html>"));
-  
-  client.println(F("ICARO SERVER on ARDUINO NANO WITH w5500 "));
-  client.print(F(" IN VALUE ="));
-  
-  client.println(value);
-  client.println(F("<br />"));
-  client.println(F("</html>"));
-
-}
-
- //There is an active client 
+ // Il y a un client actif 
 void clientServer(EthernetClient client ,byte in, byte out){
-  
+  String currentLine = "";  
     Serial.println(F("new client"));
-  // an http request ends with a blank line
+  // une requête http se termine par une ligne vide 
   boolean currentLineIsBlank = true;
+  
   while (client.connected()) {
     if (client.available()) {
       char c = client.read();
       Serial.write(c);
-      // if you've gotten to the end of the line (received a newline
-      // character) and the line is blank, the http request has ended,
-      // so you can send a reply
+      // si vous êtes arrivé à la fin de la ligne (reçu une nouvelle ligne 
+      // caractère) et que la ligne est vide, la requête(solicitud) http est terminée, 
+      // afin que vous puissiez envoyer une réponse 
       
       if (c == '\n' && currentLineIsBlank) {
-        //webPage(client,value);
         paginaWeb(client,in,out);
           break;
       }
   
       if (c == '\n') {
-        // you're starting a new line
+        // vous démarrez une nouvelle ligne 
         currentLineIsBlank = true;
       } else if (c != '\r') {
-        // you've gotten a character on the current line
+        //vous avez un caractère sur la ligne courante 
         currentLineIsBlank = false;
       }
+
+      
     }
   }
   // give the web browser time to receive the data
   delay(1);
+
+  
+  //------------------------------------------------------------------------------------------------------------------------
+  // Analizamos la respuesta del cliente en la pagina WEB . Termina con "PIN" , recupera el numero de pin o LED
+  //https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer
+  
+  //Invierte el estado de una salida
+  /*
+  if (currentLine.endsWith("PIN")&& currentLine.indexOf("http")<0){//Busca la palabra clave PIN y http
+      //Serial.println("LINEA org= "+currentLine); 
+      currentLine.remove (currentLine.indexOf('_'));//Busca caracter _ en la linea ,elimina el resto  
+      currentLine.remove (0,currentLine.indexOf('/')+1);//Busca caracter / en la linea ,elimina el resto                                          
+      digitalWrite( currentLine.toInt(),! digitalRead(currentLine.toInt()));//Invierte el estado 
+      currentLine="";//Limpia la linea .
+  }
+  */
+  //------------------------------------------------------------------------------------------------------------------------  
+
+  
   // close the connection:
   client.stop();
   Serial.println(F("client disconnected"));
 }
 
-
+//Make Web buttons OUT /IN
 void creaBotones (EthernetClient client,byte value,String type="_PIN"){
   bool estado=false;
 
 
   client.println(F("<br /><br />"));//Salto de linea
 
-  for (uint8_t pin=0;pin<N_SALIDAS;pin++){//Crea los elementos para Encender/Apagar los LEDS con los numeros
+  for (byte pin=0;pin<N_SALIDAS;pin++){//Crea los elementos para Encender/Apagar los LEDS con los numeros
     
     //Estado de este pin  segun byte  , out 0xHL
-    if (pin && value !=0){estado=true;}
+    //if (pin && value !=0){estado=true;}
+    if (  ( ((0x01) << pin) & value ) !=0){estado=true;}
     else {estado=false;}
     
       if (!estado){//Dependiendo del estado de la salida muestra un boton ROJO o VERDE
@@ -119,12 +120,12 @@ void creaBotones (EthernetClient client,byte value,String type="_PIN"){
   
 }
 
-
 void paginaWeb(EthernetClient client,byte in,byte out){
      //Respuesta http al cliente
   bool estado;//Lee el estado de una salida 
   client.println(F("HTTP/1.1 200 OK"));
   client.println(F("Content-Type: text/html"));
+  client.println(F(WEB_REFRESH));  // refresh the page  every 5 sec
   client.println();
   
   //Página web en formato HTML
@@ -133,6 +134,10 @@ void paginaWeb(EthernetClient client,byte in,byte out){
   client.println(F("</head>"));//html
   client.println(F("<body>"));//Body
   client.println(F("<h1 align='center'>ICARO</h1><h2 align='center'>Servidor web control salidas</h2>"));
+  client.print(F("<h1 align='center'> IN VALUE ="));
+  
+  client.print(in);
+  client.println(F(" </h1>"));  
 
 
   client.println(F("<div style='text-align:center;'>"));//Alineacion de botones o grupos 

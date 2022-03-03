@@ -5,7 +5,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #define N_SALIDAS 8
-
+#define WEB_REFRESH "Refresh: 1" //Retard Refre
 
 void ethernetSetup(byte mac,IPAddress *ip,EthernetServer *server);//Set Up ethernet ARCELI W5500 SPI 
 void webPage(EthernetClient client,byte value); //print the answer page  
