@@ -1,4 +1,4 @@
-
+//Antonio Villanueva Segura Gestion W5500 spi ethernet
 #include "eth.h"
 
 

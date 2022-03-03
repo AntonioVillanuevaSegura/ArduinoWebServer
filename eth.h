@@ -1,4 +1,4 @@
-
+//Antonio Villanueva Segura Gestion W5500 spi ethernet
 #ifndef ETH_H_
 #define ETH_H_
 

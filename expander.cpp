@@ -1,3 +1,4 @@
+//Antonio Villanueva Segura Gestion Bus expander i2c mcp23017
 #include "expander.h"
 
 byte valeur=0;
