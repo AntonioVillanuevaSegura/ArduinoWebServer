@@ -24,14 +24,12 @@ INT                           MISO --> D12 arduino nano
 #include "expander.h" 
 #include "eth.h"
 
-
 #define I2C_ADDRESS 0x20 //mcp23017 expander
 
 //W5500 ETHERNET
 #define MAC 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE
 #define IP 192, 168, 6,69
 #define PORT 80
-
 
 DFRobot_MCP23017 mcp(Wire, /*addr =*/I2C_ADDRESS);
 
@@ -55,7 +53,7 @@ void loop() {
   EthernetClient client = server.available(); 
 
   if (client) {
-    clientServer(client,&mcp,readPort(&mcp,'A') , readPort(&mcp,'B') ); //Lecture PORTA IN
+    clientServer(&client,&mcp,readPort(&mcp,'A') , readPort(&mcp,'B') ); //Lecture PORTA IN
   }
  
 }

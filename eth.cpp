@@ -30,10 +30,10 @@ void ethernetSetup(byte mac,IPAddress *ip,EthernetServer *server){
 }
 
 //Make Web buttons OUT /IN
-void creaBotones (EthernetClient client,byte value,String type="_PIN"){
+void creaBotones (EthernetClient *client,byte value,String type="_PIN"){
   bool estado=false;
 
-  client.println(F("<br /><br />"));//Salto de linea
+  (*client).println(F("<br /><br />"));//Salto de linea
 
   for (byte pin=0;pin<N_SALIDAS;pin++){//Crea los elementos para Encender/Apagar los LEDS con los numeros
     
@@ -43,17 +43,17 @@ void creaBotones (EthernetClient client,byte value,String type="_PIN"){
     else {estado=true;}
     
       if (estado){//Dependiendo del estado de la salida muestra un boton ROJO o VERDE
-        client.println("<button onClick=location.href=\"/"+String(pin)+type+"\" style='margin:auto;background-color: #24A807;color: snow;padding: 10px;border: 1px solid #3F7CFF;width:200px;height: 80px;'>");
+        (*client).println("<button onClick=location.href=\"/"+String(pin)+type+"\" style='margin:auto;background-color: #24A807;color: snow;padding: 10px;border: 1px solid #3F7CFF;width:200px;height: 80px;'>");
       }else{
-        client.println("<button onClick=location.href=\"/"+String(pin)+type+"\" style='margin:auto;background-color: #BA0B25;color: snow;padding: 10px;border: 1px solid #3F7CFF;width:200px;height: 80px;'>");
+        (*client).println("<button onClick=location.href=\"/"+String(pin)+type+"\" style='margin:auto;background-color: #BA0B25;color: snow;padding: 10px;border: 1px solid #3F7CFF;width:200px;height: 80px;'>");
       }
-      client.println(F("<font size=\"+4\"> "));
-      client.println( !estado ? "ON  "+String(pin) : "OFF  "+String(pin) );//Texto en boton depende del estado de la salida
-      client.println(F("</font>"));    
-      client.println(F("</button>"));
+      (*client).println(F("<font size=\"+4\"> "));
+      (*client).println( !estado ? "ON  "+String(pin) : "OFF  "+String(pin) );//Texto en boton depende del estado de la salida
+      (*client).println(F("</font>"));    
+      (*client).println(F("</button>"));
 
     if ( ((pin+1)& 0x03)==0){//Agrupa botones por grupo de 4 luego salta la linea detecta 4 8 12    equivalent ( ((pin+1)%4)==0)    
-      client.println(F("<br /><br />"));//Salto de linea
+      (*client).println(F("<br /><br />"));//Salto de linea
     }
 
   }
@@ -61,37 +61,37 @@ void creaBotones (EthernetClient client,byte value,String type="_PIN"){
   
 }
 
-void paginaWeb(EthernetClient client,byte in,byte out){
+void paginaWeb(EthernetClient *client,byte in,byte out){
      //Respuesta http al cliente
   //bool estado;//Lee el estado de una salida 
-  client.println(F("HTTP/1.1 200 OK"));
-  client.println(F("Content-Type: text/html"));
+  (*client).println(F("HTTP/1.1 200 OK"));
+  (*client).println(F("Content-Type: text/html"));
   //client.println(F(WEB_REFRESH));  // refresh the page  every x sec
 
-  client.println();
+  (*client).println();
   //Página web en formato HTML
-  client.println(F("<html>"));
+  (*client).println(F("<html>"));
    //client.println(F("<meta http-equiv="refresh" content="30">"));
-  client.println(F("<head>"));
-   client.println (F(" <meta http-equiv=\"refresh\" content=\"1; URL=/\" /> ")) ;// Refresco con envio a la raiz <meta http-equiv="refresh" content="2; URL=/" />
-  client.println(F("</head>"));//html
-  client.println(F("<body>"));//Body
-  client.println(F("<h1 align='center'>ICARO</h1><h2 align='center'>Servidor web control salidas</h2>"));
-  client.print(F("<h1 align='center'> IN VALUE ="));
+  (*client).println(F("<head>"));
+  (*client).println (F(" <meta http-equiv=\"refresh\" content=\"1; URL=/\" /> ")) ;// Refresco con envio a la raiz <meta http-equiv="refresh" content="2; URL=/" />
+  (*client).println(F("</head>"));//html
+  (*client).println(F("<body>"));//Body
+  (*client).println(F("<h1 align='center'>ICARO</h1><h2 align='center'>Servidor web control salidas</h2>"));
+  (*client).print(F("<h1 align='center'> IN VALUE ="));
   
-  client.print(in);
-  client.println(F(" </h1>"));  
+  (*client).print(in);
+  (*client).println(F(" </h1>"));  
 
 
-  client.println(F("<div style='text-align:center;'>"));//Alineacion de botones o grupos 
+  (*client).println(F("<div style='text-align:center;'>"));//Alineacion de botones o grupos 
   //Crea botones .parametros se envian a traves de ? location.href
 
   creaBotones (client,out,"_POU");
   creaBotones (client,in,"_PIN");
   
-  client.println(F("</b></body>"));//Body
-  client.println(F("</html>"));//html
-  client.println();//FIN HTTP 
+  (*client).println(F("</b></body>"));//Body
+  (*client).println(F("</html>"));//html
+  (*client).println();//FIN HTTP 
   
 //  break;
 }
@@ -113,15 +113,15 @@ byte toggleBit(byte Byte,int pos){
   
 }
 
-void clientServer(EthernetClient client ,DFRobot_MCP23017 *mcp,byte in, byte out){
+void clientServer(EthernetClient *client ,DFRobot_MCP23017 *mcp,byte in, byte out){
   String currentLine = "";  
     Serial.println(F("new client"));
   // une requête http se termine par une ligne vide 
   //boolean currentLineIsBlank = true;
   
-      while (client.connected()) {            // Queda en bucle mientras el cliente este conectado 
-      if (client.available()) {             // Hay cliente ,datos , bytes para leer del cliente ? 
-        char c = client.read();             // Entonces leemos un dato un caracter char
+      while ((*client).connected()) {            // Queda en bucle mientras el cliente este conectado 
+      if ((*client).available()) {             // Hay cliente ,datos , bytes para leer del cliente ? 
+        char c = (*client).read();             // Entonces leemos un dato un caracter char
         //Serial.write(c);                    // imprime en el puerto serie el dato leido
         if (c == '\n') {                    // ha llegado al final?,fin de linea \n ?
           //Si la linea esta vacia , "blanca", obtenemos dos caractares en una linea
@@ -167,7 +167,7 @@ void clientServer(EthernetClient client ,DFRobot_MCP23017 *mcp,byte in, byte out
 
   
   // close the connection:
-  client.stop();
+  (*client).stop();
 
   Serial.println(F("client disconnected"));
 }
