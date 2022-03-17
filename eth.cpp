@@ -63,15 +63,17 @@ void creaBotones (EthernetClient client,byte value,String type="_PIN"){
 
 void paginaWeb(EthernetClient client,byte in,byte out){
      //Respuesta http al cliente
-  bool estado;//Lee el estado de una salida 
+  //bool estado;//Lee el estado de una salida 
   client.println(F("HTTP/1.1 200 OK"));
   client.println(F("Content-Type: text/html"));
   //client.println(F(WEB_REFRESH));  // refresh the page  every x sec
+
   client.println();
-  
   //Página web en formato HTML
   client.println(F("<html>"));
+   //client.println(F("<meta http-equiv="refresh" content="30">"));
   client.println(F("<head>"));
+   client.println (F(" <meta http-equiv=\"refresh\" content=\"1; URL=/\" /> ")) ;// Refresco con envio a la raiz <meta http-equiv="refresh" content="2; URL=/" />
   client.println(F("</head>"));//html
   client.println(F("<body>"));//Body
   client.println(F("<h1 align='center'>ICARO</h1><h2 align='center'>Servidor web control salidas</h2>"));
@@ -92,6 +94,23 @@ void paginaWeb(EthernetClient client,byte in,byte out){
   client.println();//FIN HTTP 
   
 //  break;
+}
+
+byte toggleBit(byte Byte,int pos){
+  //Invierte un bit dentro de un byte
+   byte value= ( 1<<pos)  & Byte ;//Recupera el bit seleccionado
+   byte mask= ~ ( 1<<pos);//Mascara
+   byte others= Byte & mask; //Recupera resto de valores
+   
+   if (value >0){//Es uno 
+      value=0;
+   }else {value=1<<pos;}
+
+
+  value |= others;
+
+  return value;//Byte con el bit en position p invertido 
+  
 }
 
 void clientServer(EthernetClient client ,DFRobot_MCP23017 *mcp,byte in, byte out){
@@ -125,71 +144,30 @@ void clientServer(EthernetClient client ,DFRobot_MCP23017 *mcp,byte in, byte out
         // Analizamos la respuesta del cliente en la pagina WEB . Termina con "PIN" , recupera el numero de pin o LED
         //https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer
 
-         //Serial.print("currentLine = "); //Debug toda le linea
-         //Serial.println (currentLine); 
-        //Invierte el estado de una salida
-        if (currentLine.endsWith("POU")&& currentLine.indexOf("http")<0){//Busca la palabra clave POW & http
-            //Serial.println("LINEA org= "+currentLine); 
+        // give the web browser time to receive the data
+        delay(1);
+
+        if ((currentLine.endsWith("POU") | currentLine.endsWith("PIN") )&& currentLine.indexOf("http")<0){//Busca la palabra clave POW & http
+  
             currentLine.remove (currentLine.indexOf('_'));//Busca caracter _ en la linea ,elimina el resto  
             currentLine.remove (0,currentLine.indexOf('/')+1);//Busca caracter / en la linea ,elimina el resto                                          
 
-            Serial.print ("numero = ");//debug
-            Serial.println (currentLine.toInt());//debug
-            
-            //digitalWrite( currentLine.toInt(),! digitalRead(currentLine.toInt()));//Invierte el estado 
-            //readPort(DFRobot_MCP23017 *mcp,char *port){
-             //setPort(DFRobot_MCP23017 *mcp,byte *value);
-
-             //1<<currentLine.toInt() ; //Bit activo 
-             byte value= ( 1<<currentLine.toInt())  & out ;//Recupera el bit seleccionado
-             byte mask= ~ ( 1<<currentLine.toInt());//Mascara
-             byte others= out & mask; //Recupera resto de valores
-
-            Serial.print ("out =");
-            Serial.println (out);
-
-            Serial.print ("mask =");
-            Serial.println (mask);
-
-            Serial.print ("others =");
-            Serial.println (others);
-             
-
-             if (value >0){//Es uno 
-                value=0;
-             }else {value=1<<currentLine.toInt();}
-
-
-            value |= others;
-            Serial.print ("value =");
-            Serial.println (value);
-            setPort(mcp,value);
-
+              out= toggleBit(out,currentLine.toInt());//Invierte bit posicion p en out              
+              setPort(mcp,out);
             
             currentLine="";//Limpia la linea .
+
+ 
         }
         
         //------------------------------------------------------------------------------------------------------------------------        
       }
-    }
-  
-  // give the web browser time to receive the data
-  //delay(1);
-
-  
-  //------------------------------------------------------------------------------------------------------------------------
-  // Analizamos la respuesta del cliente en la pagina WEB . Termina con "PIN" , recupera el numero de pin o LED
-  //https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer
-  
-  //Invierte el estado de una salida
-
-  //creaBotones (client,out,"_POU") creaBotones (client,in,"_PIN");
-
-
-  //------------------------------------------------------------------------------------------------------------------------  
+      
+    } 
 
   
   // close the connection:
   client.stop();
+
   Serial.println(F("client disconnected"));
 }
