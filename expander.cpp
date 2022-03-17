@@ -7,6 +7,8 @@ void expanderSetup (DFRobot_MCP23017 *mcp){
     Serial.println(F("i2c error !"));
     delay(1000);
   }
+
+  Serial.println ("OK bus expander init MCP23017");
   /*pinMode function is used to set the pin mode of the module
   Parameter pin, the available parameter is shown below:
   eGPA0  eGPA1  eGPA2  eGPA3  eGPA4  eGPA5  eGPA6  eGPA7  eGPA
@@ -22,7 +24,6 @@ void expanderSetup (DFRobot_MCP23017 *mcp){
    (*mcp).pinMode(/*pin = */(*mcp).eGPB, /*mode = */OUTPUT);//PORT B OUT
    (*mcp).pinMode(/*pin = */(*mcp).eGPA, /*mode = */INPUT);//PORT A IN  
 }
-
 
 void test(DFRobot_MCP23017 *mcp){
     /*
@@ -48,7 +49,7 @@ byte readPort(DFRobot_MCP23017 *mcp,char *port){
     return (*mcp).digitalRead(/*pin = */(*mcp).eGPA);
   }
 
-  (*mcp).pinMode(/*pin = */(*mcp).eGPB, /*mode = */INPUT);//PORT B IN  
+  //(*mcp).pinMode(/*pin = */(*mcp).eGPB, /*mode = */INPUT);//PORT B IN  
   return (*mcp).digitalRead(/*pin = */(*mcp).eGPB);
   
 }
@@ -56,6 +57,6 @@ byte readPort(DFRobot_MCP23017 *mcp,char *port){
 void setPort(DFRobot_MCP23017 *mcp,byte *value){
 
   (*mcp).pinMode(/*pin = */(*mcp).eGPB, /*mode = */OUTPUT);//PORT B OUTPUT 
-  return (*mcp).digitalWrite(/*pin = */(*mcp).eGPB,value);
+  (*mcp).digitalWrite(/*pin = */(*mcp).eGPB,value);
   
 }

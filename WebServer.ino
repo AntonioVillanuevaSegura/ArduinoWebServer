@@ -53,9 +53,9 @@ void setup() {
 void loop() {
   // listen for incoming clients
   EthernetClient client = server.available(); 
-  
+
   if (client) {
-    clientServer(client,readPort(&mcp,'A') , readPort(&mcp,'B') ); //Lecture PORTA IN
+    clientServer(client,&mcp,readPort(&mcp,'A') , readPort(&mcp,'B') ); //Lecture PORTA IN
   }
-  
+ 
 }
