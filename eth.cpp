@@ -171,3 +171,26 @@ void clientServer(EthernetClient *client ,DFRobot_MCP23017 *mcp,byte in, byte ou
 
   Serial.println(F("client disconnected"));
 }
+
+
+// Conversion String vers tableau de bytes équivalent ip String="192.168.6.69" --> byte ip[4]={192.168.6.69}
+void StringIpToByteIp(String ips ,byte *ip, int size){
+    String tmp="";
+    for (int i=0; i< ips.length()+1 ;i++){
+       if ((ips[i])=='.' || ips[i]==0){ //A atteint le point de séparation ... ou la fin
+        *ip=tmp.toInt();// Enregistre la chaîne en tant qu'octet dans le tableau ip
+        ip++; //avancer d'une position dans l'array ip de type byte  
+        tmp="";//Clear  
+       }else {tmp +=(ips[i]);}//avancer d'une position dans le String       
+    }
+}
+
+//Conversion ip byte array to String ip   byte ip[4]={192.168.6.69} vers --> String="192.168.6.69" 
+String ByteIpToString(byte *ip, int size){
+  String tmp="";
+  while (size --){
+    tmp+= String( *(ip++) );
+    tmp+= char ((size>0) ? '.': 0);//S'il s'agit du dernier chiffre,  pas de point.
+  }
+  return tmp;
+}
