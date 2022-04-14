@@ -147,7 +147,8 @@ void clientServer(EthernetClient *client ,DFRobot_MCP23017 *mcp,byte in, byte ou
         // give the web browser time to receive the data
         delay(1);
 
-        if ((currentLine.endsWith("POU") | currentLine.endsWith("PIN") )&& currentLine.indexOf("http")<0){//Busca la palabra clave POW & http
+        if ((currentLine.endsWith("POU")  )&& currentLine.indexOf("http")<0){//Busca la palabra clave POW & http
+       // if ((currentLine.endsWith("POU") | currentLine.endsWith("PIN") )&& currentLine.indexOf("http")<0){//Busca la palabra clave POW & http
   
             currentLine.remove (currentLine.indexOf('_'));//Busca caracter _ en la linea ,elimina el resto  
             currentLine.remove (0,currentLine.indexOf('/')+1);//Busca caracter / en la linea ,elimina el resto                                          
@@ -171,7 +172,6 @@ void clientServer(EthernetClient *client ,DFRobot_MCP23017 *mcp,byte in, byte ou
 
   Serial.println(F("client disconnected"));
 }
-
 
 // Conversion String vers tableau de bytes équivalent ip String="192.168.6.69" --> byte ip[4]={192.168.6.69}
 void StringIpToByteIp(String ips ,byte *ip, int size){
